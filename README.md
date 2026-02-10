@@ -58,3 +58,65 @@
    ```bash
    git clone [https://github.com/AouTzxc/Global-mouse.git](https://github.com/AouTzxc/Global-mouse.git)
    cd Global-mouse
+2. 安装依赖
+   ```bash
+   pip install PyQt5 pynput
+3. 运行
+   ```bash
+   python V3.0.py
+   
+⚙️ 参数说明 (Configuration)
+参数	说明	推荐值
+加速度曲线	
+控制滚动的“手感”。数值越大，加速越猛。
+
+
+• 1.0：线性（死板）
+
+
+• 2.0：抛物线（推荐）
+
+
+• 3.0+：极速模式
+
+2.0
+基础速度	全局滚动的速度倍率。	2.0
+中心死区	点击处周围不触发滚动的像素范围，防止手抖误触。	20 px
+UI 大小	屏幕上悬浮箭头的尺寸，支持实时预览。	60 px
+
+📦 如何打包 (Build)
+如果你修改了代码并想生成自己的 .exe，请使用以下命令（需安装 PyInstaller）：
+```bash
+# 务必准备好 logo.ico 文件
+pip install pyinstaller
+
+# 执行打包命令
+pyinstaller -F -w -i "logo.ico" --add-data "logo.ico;." --uac-admin --name "Smooth_Scroll" V3.0.py
+
+🛠️ 技术栈 (Tech Stack)
+语言: Python 3
+
+GUI 框架: PyQt5 - 用于实现现代化界面和透明绘图。
+
+输入控制: pynput - 用于全局鼠标钩子监听。
+
+系统 API: ctypes - 用于 Windows 任务栏图标修复和 DPI 适配。
+
+👤 作者 (Author)
+Global Mouse made with ❤️ by 阿呆
+
+Github: @AouTzxc
+
+Project Link: https://github.com/AouTzxc/Global-mouse
+
+📄 许可证 (License)
+本项目采用 MIT 许可证。详情请参阅 LICENSE 文件。
+
+
+### 建议操作步骤：
+
+1.  在你的项目文件夹里新建一个文件叫 `README.md`。
+2.  把上面的代码粘贴进去。
+3.  在项目里新建一个文件夹叫 `screenshots`。
+4.  运行你的程序，用截图工具截一张“设置界面”保存为 `settings.png`，截一张“屏幕上的箭头”保存为 `overlay.png`，放入 `screenshots` 文件夹。
+5.  提交到 GitHub，你的项目主页就会非常漂亮了！
