@@ -1,0 +1,223 @@
+import time
+import threading
+import tkinter as tk
+from tkinter import ttk
+from pynput import mouse
+import math
+
+# --- 全局共享变量 (线程安全需要注意，这里用简单变量演示) ---
+class GlobalState:
+    def __init__(self):
+        self.scrolling_active = False
+        self.origin_x = 0
+        self.origin_y = 0
+        # 配置参数 (可通过GUI修改)
+        self.dead_zone = 20       # 死区半径
+        self.sensitivity = 2.0    # 灵敏度系数 (指数基数)
+        self.speed_multiplier = 0.0001 # 速度乘数
+        self.refresh_rate = 0.015 # 滚动刷新率
+
+gs = GlobalState()
+mouse_controller = mouse.Controller()
+
+# --- Tkinter GUI 部分 ---
+
+class OverlayWindow(tk.Toplevel):
+    """显示在屏幕中央的透明锚点图标"""
+    def __init__(self, master, x, y):
+        super().__init__(master)
+        # 窗口设置：无边框，置顶，禁用调整大小
+        self.overrideredirect(True)
+        self.wm_attributes("-topmost", True)
+        self.resizable(False, False)
+        
+        # 定义透明背景色 (一种不常用的颜色)
+        trans_color = '#ff00d4' # 亮粉色
+        self.configure(bg=trans_color)
+        # Windows 上的透明键设置
+        try:
+             self.wm_attributes("-transparentcolor", trans_color)
+        except tk.TclError:
+             print("注意：当前系统可能不支持特定的透明色属性。")
+             self.wm_attributes("-alpha", 0.8) # 回退方案：半透明
+
+        # 绘制锚点图标 (一个简单的圆圈和十字)
+        size = 50
+        canvas = tk.Canvas(self, width=size, height=size, bg=trans_color, highlightthickness=0)
+        canvas.pack()
+        
+        # 绘制样式
+        cx, cy = size / 2, size / 2
+        radius = 15
+        color = "white"
+        outline = "black"
+        
+        # 外圆
+        canvas.create_oval(cx-radius, cy-radius, cx+radius, cy+radius, 
+                           fill=trans_color, outline=outline, width=2)
+        # 中心点
+        canvas.create_oval(cx-2, cy-2, cx+2, cy+2, fill=outline, outline=outline)
+        # 箭头示意 (上下左右)
+        canvas.create_line(cx, cy-radius-5, cx, cy-radius+5, fill=outline, width=2) # 上
+        canvas.create_line(cx, cy+radius-5, cx, cy+radius+5, fill=outline, width=2) # 下
+        canvas.create_line(cx-radius-5, cy, cx-radius+5, cy, fill=outline, width=2) # 左
+        canvas.create_line(cx+radius-5, cy, cx+radius+5, cy, fill=outline, width=2) # 右
+
+        # 居中定位到点击位置
+        self.geometry(f"{size}x{size}+{int(x - size/2)}+{int(y - size/2)}")
+
+class SettingsApp(tk.Tk):
+    """主设置窗口"""
+    def __init__(self):
+        super().__init__()
+        self.title("全局中键滚动设置")
+        self.geometry("300x250")
+        self.resizable(False, False)
+        self.overlay = None
+
+        # --- GUI组件 ---
+        tk.Label(self, text="调节滚动平滑度与灵敏度", font=("Arial", 10, "bold")).pack(pady=10)
+
+        # 1. 死区调节
+        tk.Label(self, text="中心死区范围 (防止误触):").pack(anchor="w", padx=20)
+        self.dead_zone_scale = ttk.Scale(self, from_=5, to_=50, command=self.update_dead_zone)
+        self.dead_zone_scale.set(gs.dead_zone)
+        self.dead_zone_scale.pack(fill="x", padx=20, pady=5)
+
+        # 2. 灵敏度 (速度乘数)
+        tk.Label(self, text="滚动速度灵敏度:").pack(anchor="w", padx=20)
+        # 使用对数刻度或者较大的范围来获得更好的手感
+        self.speed_scale = ttk.Scale(self, from_=1, to_=100, command=self.update_speed)
+        # 将当前小的乘数映射到 1-100 的滑块范围
+        current_slider_val = (gs.speed_multiplier / 0.0001) * 10 
+        self.speed_scale.set(current_slider_val)
+        self.speed_scale.pack(fill="x", padx=20, pady=5)
+
+        tk.Label(self, text="提示: 请以管理员身份运行以在所有窗口生效", fg="gray", font=("Arial", 8)).pack(side="bottom", pady=10)
+
+        # 设置协议，确保关闭窗口时退出程序
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
+
+    def update_dead_zone(self, val):
+        gs.dead_zone = float(val)
+
+    def update_speed(self, val):
+        # 将滑块 1-100 的值映射回小的速度乘数
+        slider_val = float(val)
+        # 这是一个经验公式，让滑块右侧加速更快
+        gs.speed_multiplier = (slider_val / 10) * 0.0001
+
+    def show_overlay_safe(self, x, y):
+        """线程安全地显示覆盖层"""
+        self.after(0, lambda: self._create_overlay(x, y))
+
+    def _create_overlay(self, x, y):
+        if self.overlay:
+            self.overlay.destroy()
+        self.overlay = OverlayWindow(self, x, y)
+
+    def hide_overlay_safe(self):
+        """线程安全地隐藏覆盖层"""
+        self.after(0, self._destroy_overlay)
+
+    def _destroy_overlay(self):
+        if self.overlay:
+            self.overlay.destroy()
+            self.overlay = None
+
+    def on_closing(self):
+        """清理并退出"""
+        gs.scrolling_active = False # 停止滚动线程循环
+        self.destroy()
+        # 强制结束进程，因为 pynput 线程可能不容易优雅退出
+        import os
+        os._exit(0) 
+
+# --- 后台逻辑线程 ---
+
+def on_click(x, y, button, pressed):
+    """鼠标监听回调"""
+    # 注意：不要在这里直接调用 Tkinter 的方法，可能会崩溃。
+    # 使用 app.after 机制进行线程间通信。
+    
+    if button == mouse.Button.middle:
+        if pressed:
+            gs.scrolling_active = not gs.scrolling_active
+            if gs.scrolling_active:
+                gs.origin_x, gs.origin_y = x, y
+                # 通知 GUI 线程显示图标
+                app.show_overlay_safe(x, y)
+            else:
+                # 通知 GUI 线程隐藏图标
+                app.hide_overlay_safe()
+    
+    # 点击其他键停止滚动
+    elif pressed and (button == mouse.Button.left or button == mouse.Button.right):
+        if gs.scrolling_active:
+            gs.scrolling_active = False
+            app.hide_overlay_safe()
+
+def auto_scroll_logic_thread():
+    """
+    滚动计算核心循环
+    使用非线性公式来实现更平滑、类似浏览器的手感
+    """
+    while True:
+        if gs.scrolling_active:
+            curr_x, curr_y = mouse_controller.position
+            delta_y = curr_y - gs.origin_y
+            # 可以扩展实现水平滚动: delta_x = curr_x - gs.origin_x
+
+            distance = math.sqrt(delta_y**2) # 如果加入x轴，这里用勾股定理
+            
+            if distance > gs.dead_zone:
+                # --- 平滑滚动算法核心 ---
+                # 1. 确定方向
+                direction_y = -1 if delta_y > 0 else 1 # 向下拉(y变大)，页面应该向上滚(负值)
+                
+                # 2. 计算有效距离 (超出死区的部分)
+                effective_distance = distance - gs.dead_zone
+                
+                # 3. 非线性加速公式
+                # 使用指数或幂函数，让距离越远速度增加得越快，而不是线性的
+                # 这里的公式是经验之谈，可以根据感觉调整
+                speed_y = math.pow(effective_distance, gs.sensitivity) * gs.speed_multiplier
+                
+                # 4. 应用方向
+                scroll_amount_y = direction_y * speed_y
+                
+                # 5. 执行滚动
+                # scroll 接受浮点数，支持高精度滚动的应用会更平滑
+                mouse_controller.scroll(0, scroll_amount_y)
+                
+        # 控制刷新率，太快会占用高CPU，太慢会卡顿
+        time.sleep(gs.refresh_rate)
+        # 如果主窗口关闭，退出线程
+        if not threading.main_thread().is_alive():
+             break
+
+
+# --- 主程序入口 ---
+if __name__ == "__main__":
+    # 1. 创建 GUI 主窗口实例
+    app = SettingsApp()
+
+    # 2. 启动滚动逻辑线程
+    scroll_thread = threading.Thread(target=auto_scroll_logic_thread, daemon=True)
+    scroll_thread.start()
+
+    # 3. 启动鼠标监听线程
+    listener_thread = mouse.Listener(on_click=on_click)
+    listener_thread.start()
+
+    print("程序已启动。请使用 GUI 窗口调节参数。在任意位置点击中键测试。")
+    
+    # 4. 进入 GUI 主事件循环 (这会阻塞主线程)
+    try:
+        app.mainloop()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        # 确保清理
+        if listener_thread.is_alive():
+            listener_thread.stop()
