@@ -101,14 +101,14 @@ macOS 打包:
 ```bash
 # 生成 .app (需准备 logo.icns)
 pyinstaller --clean --noconfirm --windowed --icon="logo.icns" --name="Global Mouse" autoscroll_mac_presets.py
-🤝 贡献与反馈
+###🤝 贡献与反馈
 如果你发现了 Bug，请提交 Issue。
 
 如果你有好的想法，欢迎提交 Pull Request。
 
-👤 作者 (Author)
+###👤 作者 (Author)
 Global Mouse made with ❤️ by 阿呆
 Github: @AouTzxc
 
-📄 许可证 (License)
+###📄 许可证 (License)
 本项目采用 MIT 许可证。
