@@ -118,3 +118,21 @@ Github: @AouTzxc
 
 ### 📄 许可证 (License)
 本项目采用 MIT 许可证。
+---
+```
+
+## ☕ 支持作者 (Support)
+
+<p align="center">
+    <b>如果觉得这个工具好用，不妨请作者喝杯咖啡，这将鼓励我继续维护和开发！</b>
+    <br>
+    <i>If you find this tool useful, consider buying me a coffee to support maintenance and development!</i>
+</p>
+
+<p align="center">
+    <img src="screenshots/qr.png" width="250" alt="Donate QR Code" style="border-radius: 10px; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);">
+</p>
+
+<p align="center">
+    <img src="https://img.shields.io/badge/Thanks-感谢支持-ff69b4.svg?style=flat-square&logo=github&logoColor=white" alt="Thanks">
+</p>
