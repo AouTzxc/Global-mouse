@@ -129,7 +129,7 @@ Github: @AouTzxc
 </p>
 
 <p align="center">
-    <img src="screenshots/qr.png" width="250" alt="Donate QR Code" style="border-radius: 10px; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);">
+    <img src="screenshots/qr.jpg" width="250" alt="Donate QR Code" style="border-radius: 10px; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);">
 </p>
 
 <p align="center">
