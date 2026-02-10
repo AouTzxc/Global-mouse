@@ -46,7 +46,7 @@
 
 | 设置面板 (含横向开关) | 实际滚动效果 (全向指示) |
 | :---: | :---: |
-| ![Settings UI](screenshots/settings.png) | ![Overlay UI](screenshots/overlay.png) |
+| ![Settings UI](screenshots/settings2.png) | ![Overlay UI](screenshots/overlay2.png) |
 
 ## 🚀 快速开始 (Quick Start)
 
