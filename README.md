@@ -50,18 +50,21 @@
 点击主界面的 **“🚀 高级规则”** 按钮。
 - 勾选“在所有全屏程序中自动禁用”（玩游戏必备）。
 - 选择“黑名单模式”，并在下方输入框填入软件名称的关键词（如 `League of Legends` 或 `Photoshop`），每行一个。保存后，在这些软件内按下中键将执行系统原生操作。
---- 
-```
 
+---
 ## 👨‍💻 开发者指南 (从源码构建)
 
 如果你想自己修改代码并编译，本项目采用了最现代化的工具链：基于 `uv` 的极速环境管理和 `Nuitka` 编译。
---- 
-```
+
+---
+
 **1. 克隆项目与环境准备**
 ```bash
 git clone [https://github.com/AouTzxc/Global-mouse.git](https://github.com/AouTzxc/Global-mouse.git)
 cd Global-mouse
+
+---
+
 # 使用 uv 极速同步环境依赖
 uv sync
 ---
