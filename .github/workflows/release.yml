@@ -35,24 +35,8 @@ jobs:
       - name: 构建 Windows 版本
         if: matrix.os == 'windows-latest'
         run: |
-         HEAD
-          uv run python -m nuitka --assume-yes-for-downloads --standalone --onefile --enable-plugin=pyside6 --windows-console-mode=disable --windows-icon-from-ico=logo.ico --output-dir=build_out -o Global_Mouse_Win.exe main.py
-
-          uv run python -m nuitka \
-            --assume-yes-for-downloads \
-            --standalone \
-            --onefile \
-            --enable-plugin=pyside6 \
-            --include-qt-plugins=platforms,styles,imageformats \
-            --windows-console-mode=force \
-            --windows-icon-from-ico=logo.ico \
-            --windows-dependency-walker-mode=full \
-            --include-data-files=logo.ico=logo.ico \
-            --output-dir=build_out \
-            -o Global_Mouse_Win.exe \
-            main.py
-            2bc139f (fix: 优化全平台打包配置，修复Windows无反应及mac架构问题)
-
+          uv run python -m nuitka --assume-yes-for-downloads --standalone --onefile --enable-plugin=pyside6 --include-qt-plugins=platforms,styles,imageformats --windows-console-mode=force --windows-icon-from-ico=logo.ico --windows-dependency-walker-mode=full --include-data-files=logo.ico=logo.ico --output-dir=build_out -o Global_Mouse_Win.exe main.py
+          
       # --- macOS 构建 (DMG) ---
       - name: 构建 macOS 版本
         if: matrix.os == 'macos-latest'
