@@ -42,8 +42,19 @@ jobs:
       - name: 构建 macOS 版本 (.app 转 .zip)
         if: matrix.os == 'macos-latest'
         run: |
-          uv run python -m nuitka --assume-yes-for-downloads --standalone --macos-create-app-bundle --enable-plugin=pyside6 --macos-app-icon=logo.icns --macos-app-name="Global Mouse" --output-dir=build_out main.py
-          # macOS CI 环境没有屏幕，用 create-dmg 容易失败，所以官方推荐直接用系统自带的 ditto 压缩成原生支持的 zip
+          # 1. 添加 -o "Global Mouse" 确保生成的文件夹叫 Global Mouse.app
+          uv run python -m nuitka \
+            --assume-yes-for-downloads \
+            --standalone \
+            --macos-create-app-bundle \
+            --enable-plugin=pyside6 \
+            --macos-app-icon=logo.icns \
+            --macos-app-name="Global Mouse" \
+            --output-dir=build_out \
+            -o "Global Mouse" \
+            main.py
+
+          # 2. 现在 ditto 就能找到这个路径了
           ditto -c -k --sequesterRsrc --keepParent "build_out/Global Mouse.app" Global_Mouse_Mac.zip
 
       - name: 自动发布到 GitHub Releases
