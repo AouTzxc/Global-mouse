@@ -1,0 +1,17 @@
+[project]
+name = "global-mouse"
+version = "3.0.0"
+description = "在 Windows 和 macOS 上体验如 iOS 般丝滑的全局中键惯性滚动"
+authors = [
+    { name = "阿呆", email = "meanthat@foxmail.com" } # 这里可以改成你的邮箱
+]
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "PySide6>=6.0.0",
+    "pynput>=1.7.6",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"

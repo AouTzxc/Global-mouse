@@ -1,0 +1,55 @@
+name: Build and Release
+
+# 触发条件：当你推送类似 v3.0.0 的标签 (Tag) 时自动运行
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        # 同时启动一台 Windows 和一台 macOS 服务器
+        os: [windows-latest, macos-latest]
+
+    steps:
+      - name: 检出代码 (Checkout Code)
+        uses: actions/checkout@v4
+
+      - name: 安装 uv (Setup uv)
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - name: 设置 Python 环境
+        run: uv python install 3.10
+
+      - name: 安装项目依赖
+        run: uv sync
+
+      - name: 安装 Nuitka
+        run: uv pip install Nuitka
+
+      - name: 构建 Windows 版本 (.exe)
+        if: matrix.os == 'windows-latest'
+        run: |
+          uv run python -m nuitka --assume-yes-for-downloads --standalone --onefile --enable-plugin=pyside6 --windows-console-mode=disable --windows-icon-from-ico=logo.ico --output-dir=build_out -o Global_Mouse_Win.exe main.py
+
+      - name: 构建 macOS 版本 (.app 转 .zip)
+        if: matrix.os == 'macos-latest'
+        run: |
+          uv run python -m nuitka --assume-yes-for-downloads --standalone --macos-create-app-bundle --enable-plugin=pyside6 --macos-app-icon=logo.icns --macos-app-name="Global Mouse" --output-dir=build_out main.py
+          # macOS CI 环境没有屏幕，用 create-dmg 容易失败，所以官方推荐直接用系统自带的 ditto 压缩成原生支持的 zip
+          ditto -c -k --sequesterRsrc --keepParent "build_out/Global Mouse.app" Global_Mouse_Mac.zip
+
+      - name: 自动发布到 GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            build_out/Global_Mouse_Win.exe
+            Global_Mouse_Mac.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,16 @@
+# 忽略 uv 创建的虚拟环境
+.venv/
+
+# 忽略打包生成的文件夹和缓存
+__pycache__/
+build/
+dist/
+build_out/
+*.spec
+
+# 忽略 macOS 的系统垃圾文件
+.DS_Store
+
+# 忽略本地配置文件
+.global_mouse_config.json
+*.json

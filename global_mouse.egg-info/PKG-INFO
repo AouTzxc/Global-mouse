@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: global-mouse
+Version: 3.0.0
+Summary: 在 Windows 和 macOS 上体验如 iOS 般丝滑的全局中键惯性滚动
+Author-email: 阿呆 <meanthat@foxmail.com>
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Requires-Dist: PySide6>=6.0.0
+Requires-Dist: pynput>=1.7.6
