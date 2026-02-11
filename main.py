@@ -1,4 +1,7 @@
 import sys
+sys.stderr = open("error_log.txt", "w")
+sys.stdout = open("output_log.txt", "w")
+import sys
 import os
 import math
 import time

@@ -12,9 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # 将 macos-latest 改为 macos-13 (Intel 架构)
-        # ubuntu-latest 和 windows-latest 保持不变
-        os: [windows-latest, macos-14, ubuntu-latest]
+        os: [windows-latest, macos-latest, ubuntu-latest]
 
     steps:
       - name: 检出代码 (Checkout Code)
@@ -34,34 +32,37 @@ jobs:
       - name: 安装 Nuitka
         run: uv pip install Nuitka
 
-      # --- Windows 构建 ---
       - name: 构建 Windows 版本
         if: matrix.os == 'windows-latest'
         run: |
-          uv run python -m nuitka --assume-yes-for-downloads --standalone --onefile --enable-plugin=pyside6 --windows-console-mode=disable --windows-icon-from-ico=logo.ico --output-dir=build_out -o Global_Mouse_Win.exe main.py
-
-      # --- macOS 构建 (DMG) ---
-      - name: 构建 macOS 版本
-        if: matrix.os == 'macos-14'
-        run: |
-          # 1. 强制指定架构为 x86_64，确保 Intel Mac 也能用
-          # 如果你的测试机是 M1/M2，就把 x86_64 改成 arm64
           uv run python -m nuitka \
             --assume-yes-for-downloads \
             --standalone \
-            --macos-create-app-bundle \
-            --macos-target-arch=x86_64 \
+            --onefile \
             --enable-plugin=pyside6 \
-            --macos-app-icon=logo.icns \
-            --macos-app-name="Global Mouse" \
+            --include-qt-plugins=platforms,styles,imageformats \
+            --windows-console-mode=force \
+            --windows-icon-from-ico=logo.ico \
+            --windows-dependency-walker-mode=full \
+            --include-data-files=logo.ico=logo.ico \
             --output-dir=build_out \
+            -o Global_Mouse_Win.exe \
             main.py
+
+      # --- macOS 构建 (DMG) ---
+      - name: 构建 macOS 版本
+        if: matrix.os == 'macos-latest'
+        run: |
+          # 1. Nuitka 构建
+          uv run python -m nuitka --assume-yes-for-downloads --standalone --macos-create-app-bundle --enable-plugin=pyside6 --macos-app-icon=logo.icns --macos-app-name="Global Mouse" --output-dir=build_out main.py
           
-          # 2. 重命名
+          # 2. 【核心步骤】手动重命名文件夹，确保与 create-dmg 参数一致
           mv build_out/main.app "build_out/Global Mouse.app"
           
-          # 3. 安装工具并打包
+          # 3. 安装工具
           brew install create-dmg
+          
+          # 4. 执行打包 (此时路径和图标名称完全匹配)
           create-dmg \
             --volname "Global Mouse Installer" \
             --window-pos 200 120 \
@@ -72,7 +73,7 @@ jobs:
             --app-drop-link 425 120 \
             "Global_Mouse_Mac.dmg" \
             "build_out/Global Mouse.app/"
-            
+
       # --- Linux 构建 (AppImage) ---
       - name: 构建 Linux 版本 (AppImage)
         if: matrix.os == 'ubuntu-latest'
