@@ -1,123 +1,75 @@
-# 🖱️ Global Mouse (iOS Smooth Scroll)
-
-<p align="center">
-  <img src="logo.png" width="128" height="128" alt="Logo">
-</p>
-
-<p align="center">
-    <b>在 Windows 和 macOS 上体验如 iOS 般丝滑的全局中键惯性滚动</b>
-    <br>
-    <br>
-    <a href="https://github.com/AouTzxc/Global-mouse/releases">📥 下载最新版本</a>
-    &nbsp;|&nbsp;
-    <a href="https://github.com/AouTzxc/Global-mouse/issues">🐛 提交 Bug</a>
-</p>
+<div align="center">
+  <img src="logo.png" alt="Global Mouse Logo" width="120" height="120">
+  <h1>🖱️ Global Mouse (全局平滑滚动)</h1>
+  <p>一个极其轻量、跨平台且高度可定制的系统级鼠标中键平滑滚动增强工具。</p>
+  
+  [![Release](https://img.shields.io/github/v/release/AouTzxc/Global-mouse?color=success&style=flat-square)](https://github.com/AouTzxc/Global-mouse/releases)
+  [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS-blue?style=flat-square)](#)
+  [![Build Status](https://img.shields.io/github/actions/workflow/status/AouTzxc/Global-mouse/release.yml?style=flat-square)](https://github.com/AouTzxc/Global-mouse/actions)
+</div>
 
 ---
 
-## 📖 简介 (Introduction)
+## 🌟 为什么需要 Global Mouse？
+很多专业软件或网页不支持鼠标中键按下后的“惯性平滑滚动”，或者原生的滚动极其生硬。
+**Global Mouse** 能够在系统底层接管鼠标中键，为你带来如丝般顺滑的全局多向滚动体验。彻底解放你的食指，提升浏览长文档、写代码、看网页的效率！
 
-**Global Mouse** 是一款跨平台的全局鼠标增强工具，旨在打破传统的“红点”中键滚动体验。
+## ✨ 核心特性
 
-通过底层的鼠标钩子技术 (Pynput) 和现代化的 GUI (PyQt5)，它为你带来类似 **iPhone / Mac 触控板的惯性滚动算法**。无论是在 Excel 宽表格、Jira 看板、视频剪辑时间轴，还是超长的代码行中，只需按住中键，向任意方向拖动鼠标，即可享受丝般顺滑的非线性滚动体验。
-
-### ✨ 核心特性
-* **🍎 双平台支持**：完美适配 **Windows 10/11** 和 **macOS (Retina)**。
-* **↔️ 全向矢量滚动**：支持 X/Y 轴 360° 任意方向拖拽，所指即所至。
-* **💾 预设管理系统 (New)**：可保存多套参数（如“极速浏览”、“超慢阅读”），一键切换。
-* **🐌 超慢速阅读模式**：支持极低的速度倍率 (0.01x)，实现像素级的缓慢滚动。
-* **🎨 极简现代化 UI**：
-    * **完全透明**的悬浮指示器，不遮挡内容。
-    * **动态方向反馈**：实时显示 上/下/左/右 箭头。
-    * **UI 大小无极调节**：适配不同分辨率屏幕。
-* **⚙️ 完美的配置体验**：所有参数调节实时生效，无需重启。
-
----
-
-## 📸 预览 (Screenshots)
-
-| Windows 版本 | macOS 版本 (Retina) |
-| :---: | :---: |
-| ![Windows UI](screenshots/win_preview2.png) | ![macOS UI](screenshots/mac_preview2.png) |
-| *支持开机自启与托盘运行* | *适配 macOS 风格与深色模式* |
+- **🚀 极致平滑 & 全局生效**：基于底层输入拦截，无论什么软件都能享受丝滑的惯性滚动。
+- **⚙️ 曲线级自定义**：支持精细调节“加速度曲线”、“基础速度”、“中心死区”等硬核参数。
+- **🎮 智能防误触 (游戏模式)**：
+  - **全屏禁用**：看电影、打游戏全屏时自动挂起，绝不干扰正常操作。
+  - **黑/白名单过滤**：支持指定特定软件（如 CAD、Blender、LOL 等）自动屏蔽此功能。
+- **⌨️ 独立快捷键设定**：为横向滚动等高频功能绑定全局快捷键，一键秒切。
+- **💾 多场景预设**：你可以为“办公”、“冲浪”、“设计”保存不同的滚动参数预设，随时无缝切换。
+- **🖥️ 完美适配 4K 高分屏**：原生支持 Windows 高 DPI 缩放，UI 清晰锐利，绝不偏移。
+- **⚡ 超轻量级**：使用 Nuitka 编译为底层 C/C++ 机器码，无黑框运行，极低内存占用，绿色免安装。
 
 ---
 
-## 🛠️ 参数说明 (Configuration)
+## 📥 下载与运行
 
-| 参数 | 说明 | 推荐值 |
-| :--- | :--- | :--- |
-| **加速度曲线** | 控制惯性手感。数值越大，加速越猛。<br>• `1.0`：线性<br>• `2.0`：抛物线 (推荐) | `2.0` |
-| **基础速度** | 全局速度倍率 (0.01 - 10.00)。<br>调至 `0.05` 左右可获得极慢阅读体验。 | `2.0` |
-| **中心死区** | 防止手抖误触的静止范围。 | `20 px` |
-| **启用横向滚动** | 是否允许左右滚动。浏览纯文本文章时建议关闭。 | `✅ 开启` |
-| **开机自动启动** | (Win Only) 是否随系统启动。 | - |
-| **启动时最小化** | (Win Only) 启动后是否直接隐藏到托盘，不显示主窗口。 | - |
+本程序完全免费、开源，且**无需安装任何 Python 环境**，开箱即用。
 
----
-
-## 🚀 快速开始 (Quick Start)
-
-### 🪟 Windows 用户
-
-1.  下载 `Global_Mouse_Win.exe`。
-2.  右键 **“以管理员身份运行”** (重要！否则无法在任务管理器等窗口滚动)。
-3.  **推荐设置**：勾选“开机自动启动”和“启动时最小化”。
-4.  点击右上角 `X`，程序将缩到右下角托盘继续运行。
-
-### 🍎 macOS 用户 (必读)
-
-#### 1. 安装软件
-1. 下载最新的 `Global_Mouse_Mac.dmg` 文件并双击打开。
-2. 将左侧的 `Global Mouse.app` 拖拽到右侧的 `Applications` (应用程序) 文件夹中。
-
-#### 2. 修复“文件损坏”提示 (最重要的一步！)
-由于 macOS 对未签名的开源软件有严格限制，直接打开通常会提示 **“Global Mouse 已损坏，无法打开”** 或 **“无法验证开发者”**。请务必按以下步骤解锁：
-1. 打开 Mac 自带的 **终端 (Terminal)**。
-2. 复制并粘贴以下命令，然后按回车：
-   ```bash
-   sudo xattr -rd com.apple.quarantine /Applications/Global\ Mouse.app
-3. 输入你的电脑开机密码（注意：输入密码时屏幕上不会有任何显示，输完直接按回车即可）。
-  ```
-3. 授予辅助功能权限
-打开软件，如果发现按中键没有反应，请前往 Mac 的 系统设置 > 隐私与安全性 > 辅助功能。
-
-找到 Global Mouse 并开启右侧的开关。（如果在列表中没看到它，请点击下方的 + 号，手动进入应用程序文件夹添加它）。
-
-重启生效：授权完成后，请将软件彻底退出并重新打开。
-  ```
-4. 💡 Mac 专属使用技巧
-后台静默运行：点击窗口左上角的红色 X 不会退出程序！窗口会隐藏，并在 Mac 顶部菜单栏生成一个小图标继续为你提供滚动服务。
-
-找回窗口与完全退出：点击顶部菜单栏的小图标，选择“显示设置”即可重新呼出面板；选择“完全退出”即可彻底关闭程序。
-
-开机自启配合：强烈建议在软件内同时勾选 “开机自动启动” 和 “启动时隐藏”。这样每次开机，它都会像系统原生功能一样在后台默默准备就绪。（⚠️ 注意：开启自启前，请确保你已经把软件放入了“应用程序”文件夹）。
+1. 前往右侧的 [Releases 页面](https://github.com/AouTzxc/Global-mouse/releases)。
+2. 找到最新的版本（Latest）。
+3. 根据你的操作系统下载对应的包：
+   - **Windows 用户**: 下载 `Global_Mouse_Win.exe`，双击直接运行。
+   - **macOS 用户**: 下载 `Global_Mouse_Mac.zip`，解压后运行。
+4. 程序启动后会隐藏在右下角**系统托盘**（Windows）或**状态栏**（macOS）中，点击图标即可打开设置面板。
 
 ---
 
-## 📦 开发者指南 (Build from Source)
+## 🛠️ 进阶使用技巧
 
-如果你想自己修改代码或打包，请按照以下步骤操作。
+### 1. 什么是中心死区？
+当你在屏幕上按下中键时，会产生一个虚拟的中心点。鼠标移动超出这个“死区”的范围后，页面才会开始滚动。调大死区可以防止手抖造成的误触。
 
-### 1. 环境准备
+### 2. 如何设置黑名单防误触？
+点击主界面的 **“🚀 高级规则”** 按钮。
+- 勾选“在所有全屏程序中自动禁用”（玩游戏必备）。
+- 选择“黑名单模式”，并在下方输入框填入软件名称的关键词（如 `League of Legends` 或 `Photoshop`），每行一个。保存后，在这些软件内按下中键将执行系统原生操作。
+
+---
+
+## 👨‍💻 开发者指南 (从源码构建)
+
+如果你想自己修改代码并编译，本项目采用了最现代化的工具链：基于 `uv` 的极速环境管理和 `Nuitka` 编译。
+
+**1. 克隆项目与环境准备**
 ```bash
 git clone [https://github.com/AouTzxc/Global-mouse.git](https://github.com/AouTzxc/Global-mouse.git)
 cd Global-mouse
-pip install PyQt5 pynput
-```
+# 使用 uv 极速同步环境依赖
+uv sync
 
-2. 打包命令 (PyInstaller)
-Windows 打包:
+2. 本地运行测试
 ```bash
-# 生成 .exe
-pyinstaller -F -w -i "logo.ico" --add-data "logo.ico;." --uac-admin --name "Global_Mouse_Win" autoscroll_xy_axis.py
-```
+uv run main.py
 
-macOS 打包:
-```bash
-# 生成 .app (需准备 logo.icns)
-pyinstaller --clean --noconfirm --windowed --icon="logo.icns" --name="Global Mouse" autoscroll_mac_presets.py
-```
+3. CI/CD 自动化构建
+本项目已配置完整的 GitHub Actions 工作流。只需向主分支推送一个带有 v*.*.* 格式的 Tag，云端双平台服务器即可全自动编译打包并发布 Release！
 
 ### 🤝 贡献与反馈
 如果你发现了 Bug，请提交 Issue。
