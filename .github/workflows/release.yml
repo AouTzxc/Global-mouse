@@ -42,8 +42,16 @@ jobs:
       - name: 构建 macOS 版本
         if: matrix.os == 'macos-latest'
         run: |
+          # 1. Nuitka 构建
           uv run python -m nuitka --assume-yes-for-downloads --standalone --macos-create-app-bundle --enable-plugin=pyside6 --macos-app-icon=logo.icns --macos-app-name="Global Mouse" --output-dir=build_out main.py
+          
+          # 2. 【核心步骤】手动重命名文件夹，确保与 create-dmg 参数一致
+          mv build_out/main.app "build_out/Global Mouse.app"
+          
+          # 3. 安装工具
           brew install create-dmg
+          
+          # 4. 执行打包 (此时路径和图标名称完全匹配)
           create-dmg \
             --volname "Global Mouse Installer" \
             --window-pos 200 120 \
@@ -53,7 +61,7 @@ jobs:
             --hide-extension "Global Mouse.app" \
             --app-drop-link 425 120 \
             "Global_Mouse_Mac.dmg" \
-            "build_out/main.app/"
+            "build_out/Global Mouse.app/"
 
       # --- Linux 构建 (AppImage) ---
       - name: 构建 Linux 版本 (AppImage)
