@@ -1,7 +1,4 @@
 import sys
-sys.stderr = open("error_log.txt", "w")
-sys.stdout = open("output_log.txt", "w")
-import sys
 import os
 import math
 import time
@@ -620,20 +617,14 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     if OS_NAME == "Windows":
-        # 强制声明高分屏感知，统一 pynput 与 Qt 的物理坐标系
-        try:
-            ctypes.windll.shcore.SetProcessDpiAwareness(2) # PROCESS_PER_MONITOR_DPI_AWARE
-        except Exception:
-            try:
-                ctypes.windll.user32.SetProcessDPIAware()
-            except Exception:
-                pass
-                
         myappid = 'adai.globalmouse.app.v3' 
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
+    # 修复点 1：必须在 QApplication 实例化之前设置缩放策略
+    QApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
+    
+    # 修复点 2：实例化 App
     app = QApplication(sys.argv)
-    app.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
     app.setQuitOnLastWindowClosed(False)
 
     font_name = ".AppleSystemUIFont" if OS_NAME == "Darwin" else "Segoe UI"
