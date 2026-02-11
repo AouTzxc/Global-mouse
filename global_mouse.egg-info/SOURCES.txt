@@ -1,8 +1,0 @@
-pyproject.toml
-global_mouse.egg-info/PKG-INFO
-global_mouse.egg-info/SOURCES.txt
-global_mouse.egg-info/dependency_links.txt
-global_mouse.egg-info/requires.txt
-global_mouse.egg-info/top_level.txt
-mac/autoscroll_mac.py
-mac/autoscroll_mac_ultimate.py
